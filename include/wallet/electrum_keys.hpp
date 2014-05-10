@@ -30,7 +30,7 @@ using namespace libbitcoin;
 /**
  * Electrum compatible deterministic wallet.
  */
-class deterministic_wallet
+class BC_DEPRECATED deterministic_wallet
 {
 public:
     static constexpr size_t seed_size = 32;
