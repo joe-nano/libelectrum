@@ -26,7 +26,11 @@
 
 namespace libwallet {
 
+#ifdef ENABLE_TESTNET
+constexpr uint8_t stealth_version_byte = 0x2b;
+#else
 constexpr uint8_t stealth_version_byte = 0x2a;
+#endif
 
 BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
 {
