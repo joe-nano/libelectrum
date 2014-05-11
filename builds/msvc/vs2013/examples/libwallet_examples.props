@@ -31,7 +31,6 @@
   </ImportGroup>
 
   <PropertyGroup Condition="$(Configuration.IndexOf('DEXE')) != -1">
-    <Linkage-zlib>dynamic</Linkage-zlib>
     <Linkage-openssl>dynamic</Linkage-openssl>
     <Linkage-czmqpp>dynamic</Linkage-czmqpp>
     <Linkage-czmq>dynamic</Linkage-czmq>
@@ -42,8 +41,7 @@
     <Linkage-libbitcoin>dynamic</Linkage-libbitcoin>
   </PropertyGroup>
   <PropertyGroup Condition="$(Configuration.IndexOf('LEXE')) != -1">
-    <Linkage-zlib>ltcg</Linkage-zlib>
-    <Linkage-openssl>ltcg</Linkage-openssl>
+    <Linkage-openssl>static</Linkage-openssl>
     <Linkage-czmqpp>ltcg</Linkage-czmqpp>
     <Linkage-czmq>ltcg</Linkage-czmq>
     <Linkage-libzmq>ltcg</Linkage-libzmq>
@@ -53,7 +51,6 @@
     <Linkage-libbitcoin>ltcg</Linkage-libbitcoin>
   </PropertyGroup>
   <PropertyGroup Condition="$(Configuration.IndexOf('SEXE')) != -1">
-    <Linkage-zlib>static</Linkage-zlib>
     <Linkage-openssl>static</Linkage-openssl>
     <Linkage-czmqpp>static</Linkage-czmqpp>
     <Linkage-czmq>static</Linkage-czmq>
@@ -67,7 +64,6 @@
   <!-- Messages -->
 
   <Target Name="LinkageInfo" BeforeTargets="PrepareForBuild">
-    <Message Text="Linkage-zlib      : $(Linkage-zlib)" Importance="high"/>
     <Message Text="Linkage-openssl   : $(Linkage-openssl)" Importance="high"/>
     <Message Text="Linkage-czmqpp    : $(Linkage-czmqpp)" Importance="high"/>
     <Message Text="Linkage-czmq      : $(Linkage-czmq)" Importance="high"/>
