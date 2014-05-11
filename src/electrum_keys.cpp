@@ -26,6 +26,7 @@
 #include <openssl/hmac.h>
 #endif
 
+#include <random>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <bitcoin/bitcoin.hpp>
