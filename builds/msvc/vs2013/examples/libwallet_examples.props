@@ -31,8 +31,9 @@
   </ImportGroup>
 
   <PropertyGroup Condition="$(Configuration.IndexOf('DEXE')) != -1">
-    <Linkage-zlib>dynamic</Linkage-zlib>
     <Linkage-openssl>dynamic</Linkage-openssl>
+    <!--<Linkage-secp256k1>dynamic</Linkage-secp256k1>-->
+    <Linkage-mpir>dynamic</Linkage-mpir>
     <Linkage-czmqpp>dynamic</Linkage-czmqpp>
     <Linkage-czmq>dynamic</Linkage-czmq>
     <Linkage-libzmq>dynamic</Linkage-libzmq>
@@ -42,8 +43,9 @@
     <Linkage-libbitcoin>dynamic</Linkage-libbitcoin>
   </PropertyGroup>
   <PropertyGroup Condition="$(Configuration.IndexOf('LEXE')) != -1">
-    <Linkage-zlib>ltcg</Linkage-zlib>
-    <Linkage-openssl>ltcg</Linkage-openssl>
+    <Linkage-openssl>static</Linkage-openssl>
+    <Linkage-secp256k1>ltcg</Linkage-secp256k1>
+    <Linkage-mpir>static</Linkage-mpir>
     <Linkage-czmqpp>ltcg</Linkage-czmqpp>
     <Linkage-czmq>ltcg</Linkage-czmq>
     <Linkage-libzmq>ltcg</Linkage-libzmq>
@@ -53,8 +55,9 @@
     <Linkage-libbitcoin>ltcg</Linkage-libbitcoin>
   </PropertyGroup>
   <PropertyGroup Condition="$(Configuration.IndexOf('SEXE')) != -1">
-    <Linkage-zlib>static</Linkage-zlib>
     <Linkage-openssl>static</Linkage-openssl>
+    <Linkage-secp256k1>static</Linkage-secp256k1>
+    <Linkage-mpir>static</Linkage-mpir>
     <Linkage-czmqpp>static</Linkage-czmqpp>
     <Linkage-czmq>static</Linkage-czmq>
     <Linkage-libzmq>static</Linkage-libzmq>
@@ -67,8 +70,9 @@
   <!-- Messages -->
 
   <Target Name="LinkageInfo" BeforeTargets="PrepareForBuild">
-    <Message Text="Linkage-zlib      : $(Linkage-zlib)" Importance="high"/>
     <Message Text="Linkage-openssl   : $(Linkage-openssl)" Importance="high"/>
+    <Message Text="Linkage-secp256k1 : $(Linkage-secp256k1)" Importance="high"/>
+    <Message Text="Linkage-mpir      : $(Linkage-mpir)" Importance="high"/>
     <Message Text="Linkage-czmqpp    : $(Linkage-czmqpp)" Importance="high"/>
     <Message Text="Linkage-czmq      : $(Linkage-czmq)" Importance="high"/>
     <Message Text="Linkage-libzmq    : $(Linkage-libzmq)" Importance="high"/>
@@ -76,10 +80,6 @@
     <Message Text="Linkage-obelisk   : $(Linkage-obelisk)" Importance="high"/>
     <Message Text="Linkage-libwallet : $(Linkage-libwallet)" Importance="high"/>
     <Message Text="Linkage-libbitcoin: $(Linkage-libbitcoin)" Importance="high"/>
-  </Target>
-
-  <Target Name="CustomInfo" AfterTargets="Build" Condition="$(Configuration.IndexOf('SEXE')) != -1">
-    <Message Text="A LTCG warning on 'libeay32.lib' is a the result of a COAPP OpenSSL packaging error and can be safely ignored." Importance="high"/>
   </Target>
 
 </Project>
