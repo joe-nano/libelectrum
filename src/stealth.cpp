@@ -67,11 +67,10 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     }
     number_signatures = *iter;
     ++iter;
-    prefix.number_bits = *iter;
+    uint8_t number_bits = *iter;
+    prefix.resize(number_bits);
     ++iter;
-    size_t number_bitfield_bytes = 0;
-    if (prefix.number_bits > 0)
-        number_bitfield_bytes = prefix.number_bits / 8 + 1;
+    size_t number_bitfield_bytes = prefix.num_blocks();
     estimated_data_size += number_bitfield_bytes;
     BITCOIN_ASSERT(raw_addr.size() >= estimated_data_size);
     // Unimplemented currently!
@@ -90,7 +89,7 @@ BCW_API std::string stealth_address::encoded() const
     for (const ec_point& pubkey: spend_pubkeys)
         extend_data(raw_addr, pubkey);
     raw_addr.push_back(number_signatures);
-    BITCOIN_ASSERT_MSG(prefix.number_bits == 0, "Not yet implemented!");
+    BITCOIN_ASSERT_MSG(prefix.size() == 0, "Not yet implemented!");
     raw_addr.push_back(0);
     append_checksum(raw_addr);
     return encode_base58(raw_addr);
