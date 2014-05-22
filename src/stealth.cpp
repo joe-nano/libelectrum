@@ -88,7 +88,7 @@ BCW_API std::string stealth_address::encoded() const
     raw_addr.push_back(number_spend_pubkeys);
     for (const ec_point& pubkey: spend_pubkeys)
         extend_data(raw_addr, pubkey);
-    raw_addr.push_back(number_signatures);
+    raw_addr.push_back(static_cast<uint8_t>(number_signatures));
     BITCOIN_ASSERT_MSG(prefix.size() == 0, "Not yet implemented!");
     raw_addr.push_back(0);
     append_checksum(raw_addr);

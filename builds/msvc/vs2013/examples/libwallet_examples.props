@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <_PropertySheetDisplayName>Libwallet Wallet Common Settings</_PropertySheetDisplayName>
+    <_PropertySheetDisplayName>Libwallet Examples Common Settings</_PropertySheetDisplayName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
@@ -11,7 +11,7 @@
 
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\include\;$(ProjectDir)..\..\..\..\..\libbitcoin\include\;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)include\;$(RepoRoot)libbitcoin\include\;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4290;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <EnablePREfast>false</EnablePREfast>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -25,14 +25,14 @@
   <!-- Dependencies -->
   
   <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)libbitcoin.import.props" />
     <Import Project="$(SolutionDir)obelisk.import.props" />
     <Import Project="$(SolutionDir)libwallet.import.props" />
-    <Import Project="$(SolutionDir)libbitcoin.import.props" />
   </ImportGroup>
 
-  <PropertyGroup Condition="$(Configuration.IndexOf('DEXE')) != -1">
+  <PropertyGroup Condition="'$(DefaultLinkage)' == 'dynamic'">
     <Linkage-openssl>dynamic</Linkage-openssl>
-    <!--<Linkage-secp256k1>dynamic</Linkage-secp256k1>-->
+    <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>dynamic</Linkage-mpir>
     <Linkage-czmqpp>dynamic</Linkage-czmqpp>
     <Linkage-czmq>dynamic</Linkage-czmq>
@@ -42,7 +42,7 @@
     <Linkage-libwallet>dynamic</Linkage-libwallet>
     <Linkage-libbitcoin>dynamic</Linkage-libbitcoin>
   </PropertyGroup>
-  <PropertyGroup Condition="$(Configuration.IndexOf('LEXE')) != -1">
+  <PropertyGroup Condition="'$(DefaultLinkage)' == 'ltcg'">
     <Linkage-openssl>static</Linkage-openssl>
     <Linkage-secp256k1>ltcg</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
@@ -54,7 +54,7 @@
     <Linkage-libwallet>ltcg</Linkage-libwallet>
     <Linkage-libbitcoin>ltcg</Linkage-libbitcoin>
   </PropertyGroup>
-  <PropertyGroup Condition="$(Configuration.IndexOf('SEXE')) != -1">
+  <PropertyGroup Condition="'$(DefaultLinkage)' == 'static'">
     <Linkage-openssl>static</Linkage-openssl>
     <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>

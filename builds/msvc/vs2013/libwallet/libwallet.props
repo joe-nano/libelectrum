@@ -11,7 +11,7 @@
 
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4290;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <EnablePREfast>false</EnablePREfast>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -27,9 +27,9 @@
     <Import Project="$(SolutionDir)libbitcoin.import.props" />
   </ImportGroup>
   
-  <PropertyGroup Condition="$(Configuration.IndexOf('DLL')) != -1">
+  <PropertyGroup Condition="'$(DefaultLinkage)' == 'dynamic'">
     <Linkage-openssl>dynamic</Linkage-openssl>
-    <!--<Linkage-secp256k1>dynamic</Linkage-secp256k1>-->
+    <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>dynamic</Linkage-mpir>
     <Linkage-czmqpp>dynamic</Linkage-czmqpp>
     <Linkage-czmq>dynamic</Linkage-czmq>
@@ -38,7 +38,7 @@
     <Linkage-obelisk>dynamic</Linkage-obelisk>
     <Linkage-libbitcoin>dynamic</Linkage-libbitcoin>
   </PropertyGroup>
-  <PropertyGroup Condition="$(Configuration.IndexOf('LTCG')) != -1">
+  <PropertyGroup Condition="'$(DefaultLinkage)' == 'ltcg'">
     <Linkage-openssl>static</Linkage-openssl>
     <Linkage-secp256k1>ltcg</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
@@ -49,7 +49,7 @@
     <Linkage-obelisk>ltcg</Linkage-obelisk>
     <Linkage-libbitcoin>ltcg</Linkage-libbitcoin>
   </PropertyGroup>
-  <PropertyGroup Condition="$(Configuration.IndexOf('LIB')) != -1">
+  <PropertyGroup Condition="'$(DefaultLinkage)' == 'static'">
     <Linkage-openssl>static</Linkage-openssl>
     <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
