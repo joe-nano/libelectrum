@@ -15,7 +15,7 @@
       <DisableSpecificWarnings>4290;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <EnablePREfast>false</EnablePREfast>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="$(Configuration.IndexOf('Release')) != -1">BITCOIN_DISABLE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(DebugOrRelease)' == 'Release'">BITCOIN_DISABLE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link Condition="$(Configuration.IndexOf('Debug')) != -1">
       <AdditionalOptions>/OPT:NOLBR /IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
@@ -33,7 +33,7 @@
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'dynamic'">
     <Linkage-openssl>dynamic</Linkage-openssl>
     <Linkage-secp256k1>static</Linkage-secp256k1>
-    <Linkage-mpir>dynamic</Linkage-mpir>
+    <Linkage-mpir>static</Linkage-mpir>
     <Linkage-czmqpp>dynamic</Linkage-czmqpp>
     <Linkage-czmq>dynamic</Linkage-czmq>
     <Linkage-libzmq>dynamic</Linkage-libzmq>
@@ -44,7 +44,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'ltcg'">
     <Linkage-openssl>static</Linkage-openssl>
-    <Linkage-secp256k1>ltcg</Linkage-secp256k1>
+    <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
     <Linkage-czmqpp>static</Linkage-czmqpp>
     <Linkage-czmq>ltcg</Linkage-czmq>
