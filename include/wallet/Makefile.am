@@ -1,5 +1,7 @@
 wallet_includedir = $(includedir)/wallet
 wallet_include_HEADERS = \
+    compat.h \
+    constants.hpp \
     define.hpp \
     wallet.hpp \
     key_formats.hpp \

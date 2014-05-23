@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef LIBWALLET_URI_HPP
 #define LIBWALLET_URI_HPP
 
 #include <sstream>
 #include <boost/optional.hpp>
 #include <bitcoin/bitcoin.hpp>
+#include <wallet/constants.hpp>
 #include <wallet/define.hpp>
 
 namespace libwallet {
@@ -59,12 +59,6 @@ public:
 
 BCW_API bool uri_parse(const std::string& uri,
     uri_visitor& result, bool strict=true);
-
-#ifdef _WIN32
-constexpr uint64_t invalid_amount = UINT_LEAST64_MAX;
-#else
-constexpr uint64_t invalid_amount = std::numeric_limits<uint64_t>::max();
-#endif
 
 /**
  * Validates and parses an amount string according to the BIP 21 grammar.
