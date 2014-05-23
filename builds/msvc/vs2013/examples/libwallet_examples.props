@@ -46,9 +46,9 @@
     <Linkage-openssl>static</Linkage-openssl>
     <Linkage-secp256k1>ltcg</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
-    <Linkage-czmqpp>ltcg</Linkage-czmqpp>
+    <Linkage-czmqpp>static</Linkage-czmqpp>
     <Linkage-czmq>ltcg</Linkage-czmq>
-    <Linkage-libzmq>ltcg</Linkage-libzmq>
+    <Linkage-libzmq>static</Linkage-libzmq>
     <Linkage-libsodium>ltcg</Linkage-libsodium>
     <Linkage-obelisk>ltcg</Linkage-obelisk>
     <Linkage-libwallet>ltcg</Linkage-libwallet>
