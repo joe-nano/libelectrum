@@ -20,7 +20,7 @@
 #define LIBWALLET_KEY_FORMATS_HPP
 
 #include <string>
-#include <bitcoin/utility/ec_keys.hpp>
+#include <bitcoin/bitcoin.hpp>
 #include <wallet/define.hpp>
 
 namespace libwallet {

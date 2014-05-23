@@ -23,8 +23,7 @@
 
 #include <sstream>
 #include <boost/optional.hpp>
-#include <wallet/define.hpp>
-#include <bitcoin/address.hpp>
+#include <bitcoin/bitcoin.hpp>
 #include <wallet/define.hpp>
 
 namespace libwallet {

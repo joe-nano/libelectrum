@@ -16,13 +16,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <bitcoin/bitcoin.hpp>
 #include <wallet/stealth.hpp>
-
-#include <bitcoin/utility/assert.hpp>
-#include <bitcoin/utility/base58.hpp>
-#include <bitcoin/utility/checksum.hpp>
-#include <bitcoin/utility/hash.hpp>
-#include <bitcoin/format.hpp>
 
 namespace libwallet {
 

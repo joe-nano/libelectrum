@@ -22,7 +22,6 @@
 
 #include <string>
 #include <vector>
-#include <bitcoin/define.hpp>
 #include <wallet/define.hpp>
 
 namespace libwallet {
