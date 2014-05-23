@@ -19,9 +19,7 @@
 #ifndef LIBWALLET_STEALTH_HPP
 #define LIBWALLET_STEALTH_HPP
 
-#include <bitcoin/stealth.hpp>
-#include <bitcoin/address.hpp>
-#include <bitcoin/utility/ec_keys.hpp>
+#include <bitcoin/bitcoin.hpp>
 #include <wallet/define.hpp>
 
 namespace libwallet {

@@ -20,7 +20,7 @@
 #ifndef LIBWALLET_DEFINE_HPP
 #define LIBWALLET_DEFINE_HPP
 
-#include <bitcoin/define.hpp>
+#include <bitcoin/bitcoin.hpp>
 
 // Now we use the generic helper definitions in libbitcoin to
 // define BCW_API and BCW_INTERNAL.
@@ -38,12 +38,6 @@
     #define BCW_API      BC_HELPER_DLL_IMPORT
     #define BCW_INTERNAL BC_HELPER_DLL_LOCAL
 #endif
-
-// Work in progress, to be removed. 
-#define USE_OPENSSL_BN
-#define USE_OPENSSL_EC
-//#define USE_OPENSSL_HM
-#define NID_secp256k1 714
 
 #endif
 

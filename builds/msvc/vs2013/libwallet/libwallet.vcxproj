@@ -71,6 +71,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\include\wallet\compat.h" />
+    <ClInclude Include="..\..\..\..\include\wallet\constants.hpp" />
     <ClInclude Include="..\..\..\..\include\wallet\define.hpp" />
     <ClInclude Include="..\..\..\..\include\wallet\electrum_keys.hpp" />
     <ClInclude Include="..\..\..\..\include\wallet\hd_keys.hpp" />

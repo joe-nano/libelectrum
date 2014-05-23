@@ -16,20 +16,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include <wallet/define.hpp>
-#include <wallet/electrum_keys.hpp>
-
-#ifdef USE_OPENSSL_EC
-#include <openssl/ec.h>
-#endif
-#ifdef USE_OPENSSL_HM
-#include <openssl/hmac.h>
-#endif
-
 #include <random>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
+#include <openssl/ec.h>
 #include <bitcoin/bitcoin.hpp>
+#include <wallet/define.hpp>
+#include <wallet/electrum_keys.hpp>
+
+#define NID_secp256k1 714
 
 namespace libwallet {
 

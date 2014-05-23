@@ -3,10 +3,10 @@
  *
  * This file is part of libwallet.
  *
- * libwallet is free software: you can redistribute it and/or modify
+ * libbitcoin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License with
  * additional permissions to the one published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) 
+ * Foundation, either version 3 of the License, or (at your option)
  * any later version. For more information see LICENSE.
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,21 +17,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef LIBBITCOIN_MNEMONIC_HPP
-#define LIBBITCOIN_MNEMONIC_HPP
+#ifndef LIBWALLET_COMPAT_H
+#define LIBWALLET_COMPAT_H
 
-#include <string>
-#include <vector>
-#include <wallet/define.hpp>
+#ifdef _MSC_VER
 
-namespace libwallet {
-
-typedef std::vector<std::string> string_list;
-
-BCW_API string_list encode_mnemonic(const std::string& seed);
-BCW_API const std::string decode_mnemonic(const string_list& words);
-
-} // libwallet
-
+// There is no <endian.h> for Windows but it is always little endian.
+#ifndef __LITTLE_ENDIAN__
+# undef __BIG_ENDIAN__
+# define __LITTLE_ENDIAN__
 #endif
 
+#define MAX_UINT64 UINT64_MAX
+
+#else  // _MSC_VER
+
+#define MAX_UINT64 std::numeric_limits<uint64_t>::max()
+
+#endif // _MSC_VER
+
+#endif
