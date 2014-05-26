@@ -96,7 +96,7 @@ static std::string unescape(sci& i, sci end, bool (*is_valid)(const char))
  * false allows these malformed URI's to parse anyhow.
  * @return false if the URI is malformed.
  */
-BCW_API bool uri_parse(const std::string& uri, uri_visitor& result, 
+BCW_API bool uri_parse(const std::string& uri, uri_visitor& result,
     bool strict)
 {
     auto i = uri.begin();
@@ -171,8 +171,8 @@ BCW_API bool uri_parse_result::got_param(std::string& key, std::string& value)
     return true;
 }
 
-BCW_API uint64_t parse_amount(const std::string& amount, 
-    unsigned decmial_place)
+BCW_API uint64_t parse_amount(const std::string& amount,
+    unsigned decmial_places)
 {
     auto i = amount.begin();
     uint64_t value = 0;
@@ -188,15 +188,15 @@ BCW_API uint64_t parse_amount(const std::string& amount,
         ++i;
         while (amount.end() != i && is_digit(*i))
         {
-            if (places < decmial_place)
+            if (places < decmial_places)
                 value = 10*value + (*i - '0');
-            else if (places == decmial_place && '5' <= *i)
+            else if (places == decmial_places && '5' <= *i)
                 value += 1;
             ++places;
             ++i;
         }
     }
-    while (places < decmial_place)
+    while (places < decmial_places)
     {
         value *= 10;
         ++places;
@@ -204,6 +204,25 @@ BCW_API uint64_t parse_amount(const std::string& amount,
     if (amount.end() != i)
         return invalid_amount;
     return value;
+}
+
+BCW_API std::string format_amount(uint64_t amount, unsigned decimal_places)
+{
+    // Get the integer and fractional parts:
+    uint64_t factor = 1;
+    for (unsigned i = 0; i < decimal_places; ++i)
+        factor *= 10;
+    uint64_t int_part = amount / factor;
+    uint64_t decimal_part = amount % factor;
+    // Format as a fixed-point number:
+    std::ostringstream stream;
+    stream << int_part << '.';
+    stream << std::setw(decimal_places) << std::setfill('0') << decimal_part;
+    // Trim trailing zeros:
+    auto string = stream.str();
+    boost::algorithm::trim_right_if(string, [](char c){ return '0' == c; });
+    boost::algorithm::trim_right_if(string, [](char c){ return '.' == c; });
+    return string;
 }
 
 /**
@@ -238,16 +257,7 @@ BCW_API void uri_writer::write_address(
 
 BCW_API void uri_writer::write_amount(uint64_t satoshis)
 {
-    // Format as a fixed-point number:
-    uint64_t bitcoin = satoshis / libbitcoin::coin_price();
-    satoshis = satoshis % libbitcoin::coin_price();
-    std::ostringstream stream;
-    stream << bitcoin << '.' << std::setw(8) << std::setfill('0') << satoshis;
-    // Trim trailing zeros:
-    auto string = stream.str();
-    boost::algorithm::trim_right_if(string, [](char c){ return '0' == c; });
-    boost::algorithm::trim_right_if(string, [](char c){ return '.' == c; });
-    write_param("amount", string);
+    write_param("amount", format_amount(satoshis));
 }
 
 BCW_API void uri_writer::write_label(const std::string& label)
@@ -270,7 +280,7 @@ BCW_API void uri_writer::write_address(const std::string& address)
     stream_ << address;
 }
 
-BCW_API void uri_writer::write_param(const std::string& key, 
+BCW_API void uri_writer::write_param(const std::string& key,
     const std::string& value)
 {
     if (first_param_)
