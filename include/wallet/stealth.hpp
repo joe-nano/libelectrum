@@ -19,6 +19,7 @@
 #ifndef LIBWALLET_STEALTH_HPP
 #define LIBWALLET_STEALTH_HPP
 
+#include <stdint.h>
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/define.hpp>
 
@@ -29,9 +30,9 @@ using namespace libbitcoin;
 struct stealth_address
 {
     typedef std::vector<ec_point> pubkey_list;
-    enum
+    enum class flags : uint8_t
     {
-        reuse_key_option = 0x01
+        reuse_key = 0x01
     };
 
     BCW_API bool set_encoded(const std::string& encoded_address);
