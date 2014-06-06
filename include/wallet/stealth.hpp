@@ -30,7 +30,7 @@ using namespace libbitcoin;
 struct stealth_address
 {
     typedef std::vector<ec_point> pubkey_list;
-    enum class flags : uint8_t
+    enum flags : uint8_t
     {
         reuse_key = 0x01
     };
