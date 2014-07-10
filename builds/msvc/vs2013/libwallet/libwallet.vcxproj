@@ -84,7 +84,9 @@
     <ClInclude Include="..\..\..\..\include\wallet\wallet.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\electrum_keys.cpp" />
+    <ClCompile Include="..\..\..\..\src\electrum_keys.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\hd_keys.cpp" />
     <ClCompile Include="..\..\..\..\src\key_formats.cpp" />
     <ClCompile Include="..\..\..\..\src\mnemonic.cpp" />
