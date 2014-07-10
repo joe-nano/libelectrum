@@ -103,7 +103,7 @@ BCW_API ec_point initiate_stealth(
 {
     ec_point final = spend_pubkey;
     ec_secret shared = shared_secret(ephem_secret, scan_pubkey);
-    bool success = ec_tweak_add(final, shared);
+    bool success = ec_add(final, shared);
     BITCOIN_ASSERT(success);
     return final;
 }
@@ -114,7 +114,7 @@ BCW_API ec_point uncover_stealth(
 {
     ec_point final = spend_pubkey;
     ec_secret shared = shared_secret(scan_secret, ephem_pubkey);
-    bool success = ec_tweak_add(final, shared);
+    bool success = ec_add(final, shared);
     BITCOIN_ASSERT(success);
     return final;
 }
