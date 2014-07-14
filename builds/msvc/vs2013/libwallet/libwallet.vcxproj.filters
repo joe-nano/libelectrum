@@ -16,9 +16,6 @@
     <ClCompile Include="..\..\..\..\src\uri.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\electrum_keys.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\stealth.cpp">
       <Filter>src</Filter>
     </ClCompile>
