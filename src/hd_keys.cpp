@@ -80,7 +80,7 @@ BCW_API const hd_key_lineage& hd_public_key::lineage() const
     return lineage_;
 }
 
-BCW_API bool hd_public_key::set_serialized(std::string encoded)
+BCW_API bool hd_public_key::deserialize(std::string encoded)
 {
     if (!is_base58(encoded))
         return false;
@@ -195,7 +195,7 @@ BCW_API const ec_secret& hd_private_key::private_key() const
     return k_;
 }
 
-BCW_API bool hd_private_key::set_serialized(std::string encoded)
+BCW_API bool hd_private_key::deserialize(std::string encoded)
 {
     if (!is_base58(encoded))
         return false;
