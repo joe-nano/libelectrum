@@ -3,12 +3,10 @@ wallet_include_HEADERS = \
     compat.h \
     constants.hpp \
     define.hpp \
-    wallet.hpp \
-    key_formats.hpp \
-    transaction.hpp \
-    electrum_keys.hpp \
     hd_keys.hpp \
+    key_formats.hpp \
     mnemonic.hpp \
     stealth.hpp \
-    uri.hpp
-
+    transaction.hpp \
+    uri.hpp \
+    wallet.hpp
