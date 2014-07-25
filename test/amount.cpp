@@ -40,6 +40,17 @@ BOOST_AUTO_TEST_CASE(parse_amount_test)
     BOOST_REQUIRE(parse_amount("64.25", 5) == 6425000);
 }
 
+BOOST_AUTO_TEST_CASE(parse_amount_overflow_test)
+{
+    BOOST_REQUIRE(parse_amount("9999999999999999999", 0) ==
+        9999999999999999999U);
+    BOOST_REQUIRE(parse_amount("18446744073709551614", 0) ==
+        18446744073709551614U);
+    BOOST_REQUIRE(parse_amount("18446744073709551615", 0) == invalid_amount);
+    BOOST_REQUIRE(parse_amount("18446744073709551616", 0) == invalid_amount);
+    BOOST_REQUIRE(parse_amount("99999999999999999999", 0) == invalid_amount);
+}
+
 BOOST_AUTO_TEST_CASE(format_amount_test)
 {
     BOOST_REQUIRE(format_amount(123, 0) == "123");
