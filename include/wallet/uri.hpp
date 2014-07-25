@@ -30,6 +30,9 @@
 
 namespace libwallet {
 
+/**
+ * The URI parser calls these methods each time it extracts a URI component.
+ */
 class BCW_API uri_visitor
 {
 public:
@@ -59,6 +62,13 @@ public:
     bool got_param(std::string& key, std::string& value);
 };
 
+/**
+ * Parses a URI string into its individual components.
+ * @param strict Only accept properly-escaped parameters. Some bitcoin
+ * software does not properly escape URI parameters, and setting strict to
+ * false allows these malformed URI's to parse anyhow.
+ * @return false if the URI is malformed.
+ */
 BCW_API bool uri_parse(const std::string& uri,
     uri_visitor& result, bool strict=true);
 
