@@ -89,13 +89,6 @@ static std::string unescape(sci& i, sci end, bool (*is_valid)(const char))
     return out;
 }
 
-/**
- * Parses a URI string into its individual components.
- * @param strict Only accept properly-escaped parameters. Some bitcoin
- * software does not properly escape URI parameters, and setting strict to
- * false allows these malformed URI's to parse anyhow.
- * @return false if the URI is malformed.
- */
 BCW_API bool uri_parse(const std::string& uri, uri_visitor& result,
     bool strict)
 {
