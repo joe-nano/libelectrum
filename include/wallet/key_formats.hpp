@@ -29,7 +29,7 @@ using namespace libbitcoin;
 
 /**
  * Convert a secret parameter to the wallet import format.
- * The compressed flag can be used to show this represents a compressed pubkey.
+ * The compressed flag can be used to show this represents a compressed key.
  * Returns an empty string on error.
  *
  * @code
@@ -55,7 +55,7 @@ BCW_API std::string secret_to_wif(
 BCW_API ec_secret wif_to_secret(const std::string& wif);
 
 /**
- * Checks to see if a wif refers to a compressed public key.
+ * Checks to see if a wif refers to a compressed key.
  * This does no other checks on the validity of the wif.
  * Returns false otherwise.
  *
