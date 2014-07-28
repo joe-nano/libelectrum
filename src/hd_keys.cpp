@@ -180,7 +180,7 @@ BCW_API hd_private_key::hd_private_key(const data_chunk& seed, bool testnet)
   : hd_public_key()
 {
     std::string key("Bitcoin seed");
-    split_long_hash I = split(hmac_sha512_hash(seed, to_data_chunk(key)));
+    auto I = split(hmac_sha512_hash(seed, to_data_chunk(key)));
 
     // The key is invalid if parse256(IL) >= n or 0:
     if (!verify_private_key(I.L))
