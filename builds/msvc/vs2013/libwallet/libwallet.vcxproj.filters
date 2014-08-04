@@ -16,10 +16,13 @@
     <ClCompile Include="..\..\..\..\src\uri.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\electrum_keys.cpp">
+    <ClCompile Include="..\..\..\..\src\stealth.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\stealth.cpp">
+    <ClCompile Include="..\..\..\..\src\amount.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\electrum_keys.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -55,6 +58,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\wallet\constants.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\wallet\amount.hpp">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
