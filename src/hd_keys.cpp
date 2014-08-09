@@ -80,7 +80,7 @@ BCW_API const hd_key_lineage& hd_public_key::lineage() const
     return lineage_;
 }
 
-BCW_API bool hd_public_key::deserialize(std::string encoded)
+BCW_API bool hd_public_key::set_encoded(std::string encoded)
 {
     if (!is_base58(encoded))
         return false;
@@ -105,7 +105,7 @@ BCW_API bool hd_public_key::deserialize(std::string encoded)
     return true;
 }
 
-BCW_API std::string hd_public_key::serialize() const
+BCW_API std::string hd_public_key::encoded() const
 {
     data_chunk data;
     data.reserve(serialized_length);
@@ -195,7 +195,7 @@ BCW_API const ec_secret& hd_private_key::private_key() const
     return k_;
 }
 
-BCW_API bool hd_private_key::deserialize(std::string encoded)
+BCW_API bool hd_private_key::set_encoded(std::string encoded)
 {
     if (!is_base58(encoded))
         return false;
@@ -222,7 +222,7 @@ BCW_API bool hd_private_key::deserialize(std::string encoded)
     return true;
 }
 
-BCW_API std::string hd_private_key::serialize() const
+BCW_API std::string hd_private_key::encoded() const
 {
     data_chunk data;
     data.reserve(4 + 1 + 4 + 4 + 32 + 33 + 4);
