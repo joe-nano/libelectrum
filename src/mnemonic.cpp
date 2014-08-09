@@ -1662,12 +1662,13 @@ string_list common_words{
 "weary"
 };
 
-BCW_API string_list encode_mnemonic(const std::string& seed)
+BCW_API string_list encode_mnemonic(const bc::data_chunk& seed)
 {
     BITCOIN_ASSERT(common_words.size() == 1626);
     string_list result;
-    auto seed_end = seed.end() - seed.size() % 8;
-    for (auto it = seed.begin(); it != seed_end; it += 8)
+    std::string string_seed(bc::encode_hex(seed));
+    const auto seed_end = string_seed.end() - string_seed.size() % 8;
+    for (auto it = string_seed.begin(); it != seed_end; it += 8)
     {
         const std::string hex_int(it, it + 8);
         BITCOIN_ASSERT(hex_int.size() == 8);
