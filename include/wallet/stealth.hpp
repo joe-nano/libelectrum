@@ -32,7 +32,13 @@ struct stealth_address
     typedef std::vector<ec_point> pubkey_list;
     enum flags : uint8_t
     {
+        none = 0x00,
         reuse_key = 0x01
+    };
+    enum versions : uint8_t
+    {
+        mainnet = 0x2a,
+        testnet = 0x2b
     };
 
     BCW_API bool set_encoded(const std::string& encoded_address);
@@ -44,6 +50,17 @@ struct stealth_address
     size_t number_signatures = 0;
     stealth_prefix prefix;
 };
+
+
+struct stealth_info
+{
+    ec_point ephem_pubkey;
+    stealth_bitfield bitfield;
+};
+
+// See libbitcoin::extract()
+BCW_API bool extract_stealth_info(stealth_info& info,
+    const bc::script_type& output_script);
 
 BCW_API ec_point initiate_stealth(
     const ec_secret& ephem_secret, const ec_point& scan_pubkey,
