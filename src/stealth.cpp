@@ -103,7 +103,7 @@ BCW_API bool extract_stealth_info(stealth_info& info,
     const bc::script_type& output_script)
 {
     if (output_script.type() == payment_type::stealth_info &&
-        output_script.operations().size() > 0)
+        output_script.operations().size() > 1)
     {
         const auto& data = output_script.operations()[1].data;
         BITCOIN_ASSERT(data.size() == version_size + nonce_size + pubkey_size);
