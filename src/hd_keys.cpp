@@ -16,9 +16,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <wallet/hd_keys.hpp>
+
+#include <cstdint>
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/define.hpp>
-#include <wallet/hd_keys.hpp>
+
+using namespace bc;
 
 namespace libwallet {
 

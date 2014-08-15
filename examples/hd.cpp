@@ -23,7 +23,10 @@
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/hd_keys.hpp>
 
-constexpr auto hard = libwallet::first_hardened_key;
+using namespace bc;
+using namespace libwallet;
+
+constexpr auto hard = first_hardened_key;
 
 /**
  * Test vector 1 from BIP 32.
@@ -31,13 +34,13 @@ constexpr auto hard = libwallet::first_hardened_key;
 void test_vector_1()
 {
     // Generate public keys:
-    libbitcoin::data_chunk seed
+    data_chunk seed
     {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
     };
 
-    libwallet::hd_private_key m(seed);
+    hd_private_key m(seed);
     auto m0h      = m.      generate_private_key(hard);
     auto m0h1     = m0h.    generate_private_key(1);
     auto m0h12h   = m0h1.   generate_private_key(2 + hard);
@@ -64,7 +67,7 @@ void test_vector_1()
         "Ha8kmHScGpWmj4WggLyQjgPie1rFSruoUihUZREPSL39UNdE3BBDu76");
 
     // Generate public keys:
-    libwallet::hd_public_key m_pub = m;
+    hd_public_key m_pub = m;
     auto m0h_bad      = m_pub.      generate_public_key(hard);
     auto m0h_pub      = m.          generate_public_key(hard);
     auto m0h1_pub     = m0h_pub.    generate_public_key(1);
@@ -99,7 +102,7 @@ void test_vector_1()
 void test_vector_2()
 {
     // Generate private keys:
-    libbitcoin::data_chunk seed
+    data_chunk seed
     {
         0xff, 0xfc, 0xf9, 0xf6, 0xf3, 0xf0, 0xed, 0xea,
         0xe7, 0xe4, 0xe1, 0xde, 0xdb, 0xd8, 0xd5, 0xd2,
@@ -111,7 +114,7 @@ void test_vector_2()
         0x57, 0x54, 0x51, 0x4e, 0x4b, 0x48, 0x45, 0x42
     };
 
-    libwallet::hd_private_key m(seed);
+    hd_private_key m(seed);
     auto m0       = m.      generate_private_key(0);
     auto m0xH     = m0.     generate_private_key(2147483647 + hard);
     auto m0xH1    = m0xH.   generate_private_key(1);
@@ -138,7 +141,7 @@ void test_vector_2()
         "EXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j");
 
     // Generate public keys:
-    libwallet::hd_public_key m_pub = m;
+    hd_public_key m_pub = m;
     auto m0_pub       = m_pub.      generate_public_key(0);
     auto m0xH_pub     = m0.         generate_public_key(2147483647 + hard);
     auto m0xH1_pub    = m0xH_pub.   generate_public_key(1);

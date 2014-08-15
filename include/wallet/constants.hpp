@@ -25,7 +25,7 @@
 
 namespace libwallet {
 
-    constexpr uint64_t invalid_amount = MAX_UINT64;
+constexpr uint64_t invalid_amount = MAX_UINT64;
 
 } // namespace libwallet
 
