@@ -73,24 +73,6 @@ BCW_API bool uri_parse(const std::string& uri,
     uri_visitor& result, bool strict=true);
 
 /**
- * Validates and parses an amount string according to the BIP 21 grammar.
- * @param decmial_places the location of the decimal point. The default
- * value converts bitcoins to satoshis.
- * @return parsed value, or invalid_amount for failure.
- */
-BCW_API uint64_t parse_amount(const std::string& amount,
-    unsigned decimal_place=8);
-
-/**
- * Writes a Bitcoin amount to a string, following the BIP 21 grmmar.
- * Avoids the rounding issues often seen with floating-point methods.
- * @param decmial_places the location of the decimal point. The default
- * value converts satoshis to bitcoins.
- */
-BCW_API std::string format_amount(uint64_t amount,
-    unsigned decimal_places=8);
-
-/**
  * Assembles a bitcoin URI string.
  */
 class uri_writer

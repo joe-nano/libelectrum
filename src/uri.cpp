@@ -24,6 +24,8 @@
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/amount.hpp>
 #include <wallet/define.hpp>
+#include <wallet/uri.hpp>
+#include <wallet/amount.hpp>
 
 using namespace bc;
 
