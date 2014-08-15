@@ -25,15 +25,17 @@ using namespace bc;
 
 namespace libwallet {
 
-constexpr uint8_t options_size = 1;
-constexpr uint8_t checksum_size = 4;
-constexpr uint8_t version_size = 1;
-constexpr uint8_t nonce_size = 4;
+constexpr uint8_t options_size = sizeof(uint8_t);
+constexpr uint8_t version_size = sizeof(uint8_t);
+constexpr uint8_t nonce_size = sizeof(uint32_t);
 constexpr uint8_t pubkey_size = 33;
-constexpr uint8_t number_keys_size = 1;
-constexpr uint8_t number_sigs_size = 1;
-constexpr uint8_t prefix_length_size = 1;
-constexpr size_t max_spend_key_count = sizeof(uint8_t)* byte_size;
+constexpr uint8_t number_keys_size = sizeof(uint8_t);
+constexpr uint8_t number_sigs_size = sizeof(uint8_t);
+constexpr uint8_t prefix_length_size = sizeof(uint8_t);
+constexpr uint8_t checksum_size = sizeof(uint32_t);
+
+constexpr uint8_t max_prefix_bits = sizeof(uint32_t) * byte_size;
+constexpr uint8_t max_spend_key_count = sizeof(uint8_t) * byte_size;
 
 // wiki.unsystem.net/index.php/DarkWallet/Stealth#Address_format
 // [version:1=0x2a][options:1][scan_pubkey:33][N:1][spend_pubkey_1:33]..
@@ -173,6 +175,8 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
 
     // [prefix_number_bits:1]
     auto prefix_number_bits = *iter;
+    if (prefix_number_bits > max_prefix_bits)
+        return valid_;
     prefix_.resize(prefix_number_bits);
     ++iter;
 
