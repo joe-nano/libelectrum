@@ -33,16 +33,15 @@ constexpr uint8_t pubkey_size = 33;
 constexpr uint8_t number_keys_size = 1;
 constexpr uint8_t number_sigs_size = 1;
 constexpr uint8_t prefix_length_size = 1;
-constexpr uint8_t min_prefix_size = 1;
 constexpr size_t max_spend_key_count = sizeof(uint8_t)* byte_size;
 
 // wiki.unsystem.net/index.php/DarkWallet/Stealth#Address_format
 // [version:1=0x2a][options:1][scan_pubkey:33][N:1][spend_pubkey_1:33]..
 // [spend_pubkey_N:33][number_signatures:1][prefix_number_bits:1]
-// [prefix:prefix_number_bits / 8, round up]
+// [prefix:prefix_number_bits / 8, round up][checksum:4]
 // Estimate assumes N = 0 and prefix_length = 0:
 constexpr size_t min_address_size = version_size + options_size + pubkey_size +
-    number_keys_size + number_sigs_size + prefix_length_size + min_prefix_size;
+    number_keys_size + number_sigs_size + prefix_length_size + checksum_size;
 
 BCW_API stealth_address::stealth_address()
     : valid_(false)
@@ -117,14 +116,14 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
 {
     valid_ = false;
     auto raw_address = decode_base58(encoded_address);
-    if (!verify_checksum(raw_address))
+    
+    // Size is guarded until we get to N.
+    auto required_size = min_address_size;
+    if (raw_address.size() < required_size)
         return valid_;
 
-    // Delete checksum bytes.
-    BITCOIN_ASSERT(raw_address.size() >= checksum_size);
-    auto checksum_begin = raw_address.end() - checksum_size;
-    raw_address.erase(checksum_begin, raw_address.end());
-    BITCOIN_ASSERT(raw_address.size() >= min_address_size);
+    if (!verify_checksum(raw_address))
+        return valid_;
 
     // Start walking the array.
     auto iter = raw_address.begin();
@@ -133,6 +132,7 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     auto version = *iter;
     if (version != network::mainnet && version != network::testnet)
         return valid_;
+    testnet_ = (version == network::testnet);
     ++iter;
 
     // [options:1]
@@ -140,9 +140,6 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     if (options != flags::none && options != flags::reuse_key)
         return valid_;
     ++iter;
-
-    // Delayed assignment until we can't fail.
-    testnet_ = (version == network::testnet);
 
     // [scan_pubkey:33]
     auto scan_key_begin = iter;
@@ -153,8 +150,10 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     auto number_spend_pubkeys = *iter;
     ++iter;
 
-    auto buffer_size = min_address_size + number_spend_pubkeys * pubkey_size;
-    BITCOIN_ASSERT(raw_address.size() >= buffer_size);
+    // Adjust and retest required size. for pubkey list.
+    required_size += number_spend_pubkeys * pubkey_size;
+    if (raw_address.size() < required_size)
+        return valid_;
 
     // We don't explicitly save 'reuse', instead we add to spend_pubkeys_.
     if (options == flags::reuse_key)
@@ -173,7 +172,7 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     ++iter;
 
     // [prefix_number_bits:1]
-    uint8_t prefix_number_bits = *iter;
+    auto prefix_number_bits = *iter;
     prefix_.resize(prefix_number_bits);
     ++iter;
 
@@ -181,8 +180,11 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     auto prefix_bytes = (prefix_number_bits + (byte_size-1)) / byte_size;
     auto prefix_blocks = prefix_.num_blocks();
     BITCOIN_ASSERT(prefix_bytes == prefix_blocks);
-    buffer_size += prefix_blocks;
-    BITCOIN_ASSERT(raw_address.size() >= buffer_size);
+
+    // Adjust and retest required size for prefix bytes..
+    required_size += prefix_blocks;
+    if (raw_address.size() != required_size)
+        return valid_;
 
     // Prefix not yet supported on server!
     BITCOIN_ASSERT(prefix_number_bits == 0);

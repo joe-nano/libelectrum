@@ -28,6 +28,24 @@ static bool is_digit(const char c)
     return '0' <= c && c <= '9';
 }
 
+template <typename Int>
+Int multiply_clamp(Int a, Int b, Int max)
+{
+    if (a > max / b)
+        return max;
+    else
+        return a * b;
+}
+
+template <typename Int>
+Int add_clamp(Int a, Int b, Int max)
+{
+    if (a > max - b)
+        return max;
+    else
+        return a + b;
+}
+
 BCW_API uint64_t parse_amount(const std::string& amount,
     unsigned decmial_places)
 {
@@ -37,7 +55,8 @@ BCW_API uint64_t parse_amount(const std::string& amount,
 
     while (amount.end() != i && is_digit(*i))
     {
-        value = 10*value + (*i - '0');
+        auto x10 = multiply_clamp<uint64_t>(value, 10, invalid_amount);
+        value = add_clamp<uint64_t>(x10, (*i - '0'), invalid_amount);
         ++i;
     }
     if (amount.end() != i && '.' == *i)
@@ -46,16 +65,19 @@ BCW_API uint64_t parse_amount(const std::string& amount,
         while (amount.end() != i && is_digit(*i))
         {
             if (places < decmial_places)
-                value = 10*value + (*i - '0');
+            {
+                auto x10 = multiply_clamp<uint64_t>(value, 10, invalid_amount);
+                value = add_clamp<uint64_t>(x10, (*i - '0'), invalid_amount);
+            }
             else if (places == decmial_places && '5' <= *i)
-                value += 1;
+                value = add_clamp<uint64_t>(value, 1, invalid_amount);
             ++places;
             ++i;
         }
     }
     while (places < decmial_places)
     {
-        value *= 10;
+        value = multiply_clamp<uint64_t>(value, 10, invalid_amount);
         ++places;
     }
     if (amount.end() != i)

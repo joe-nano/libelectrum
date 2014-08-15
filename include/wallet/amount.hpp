@@ -32,7 +32,7 @@ namespace libwallet {
  * @return parsed value, or invalid_amount for failure.
  */
 BCW_API uint64_t parse_amount(const std::string& amount,
-    unsigned decimal_place=8);
+    unsigned decimal_places=8);
 
 /**
  * Writes a Bitcoin amount to a string, following the BIP 21 grmmar.
