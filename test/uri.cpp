@@ -223,25 +223,6 @@ BOOST_AUTO_TEST_CASE(uri_parse_custom_test)
     BOOST_REQUIRE(custom.myparam && custom.myparam.get() == "here");
 }
 
-BOOST_AUTO_TEST_CASE(parse_amount_test)
-{
-    BOOST_REQUIRE(libwallet::parse_amount("4.432") == 443200000);
-    BOOST_REQUIRE(libwallet::parse_amount("4.432.") ==
-        libwallet::invalid_amount);
-    BOOST_REQUIRE(libwallet::parse_amount("4")  == 400000000);
-    BOOST_REQUIRE(libwallet::parse_amount("4.") == 400000000);
-    BOOST_REQUIRE(libwallet::parse_amount(".4") == 40000000);
-    BOOST_REQUIRE(libwallet::parse_amount(".")  == 0);
-    BOOST_REQUIRE(libwallet::parse_amount("0.00000004")  == 4);
-    BOOST_REQUIRE(libwallet::parse_amount("0.000000044") == 4);
-    BOOST_REQUIRE(libwallet::parse_amount("0.000000045") == 5);
-    BOOST_REQUIRE(libwallet::parse_amount("0.000000049") == 5);
-    BOOST_REQUIRE(libwallet::parse_amount("4.432112395") == 443211240);
-    BOOST_REQUIRE(libwallet::parse_amount("21000000") == 2100000000000000);
-    BOOST_REQUIRE(libwallet::parse_amount("1234.9", 0) == 1235);
-    BOOST_REQUIRE(libwallet::parse_amount("64.25", 5) == 6425000);
-}
-
 BOOST_AUTO_TEST_CASE(uri_write_test)
 {
     libwallet::uri_writer writer;

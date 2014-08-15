@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2011-2014 libwallet developers (see AUTHORS)
+ *
+ * This file is part of libwallet.
+ *
+ * libwallet is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License with
+ * additional permissions to the one published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option)
+ * any later version. For more information see LICENSE.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+#include <boost/test/unit_test.hpp>
+#include <wallet/wallet.hpp>
+
+using namespace libwallet;
+
+BOOST_AUTO_TEST_CASE(parse_amount_test)
+{
+    BOOST_REQUIRE(parse_amount("4.432") == 443200000);
+    BOOST_REQUIRE(parse_amount("4.432.") == invalid_amount);
+    BOOST_REQUIRE(parse_amount("4")  == 400000000);
+    BOOST_REQUIRE(parse_amount("4.") == 400000000);
+    BOOST_REQUIRE(parse_amount(".4") == 40000000);
+    BOOST_REQUIRE(parse_amount(".")  == 0);
+    BOOST_REQUIRE(parse_amount("0.00000004")  == 4);
+    BOOST_REQUIRE(parse_amount("0.000000044") == 4);
+    BOOST_REQUIRE(parse_amount("0.000000045") == 5);
+    BOOST_REQUIRE(parse_amount("0.000000049") == 5);
+    BOOST_REQUIRE(parse_amount("4.432112395") == 443211240);
+    BOOST_REQUIRE(parse_amount("21000000") == 2100000000000000);
+    BOOST_REQUIRE(parse_amount("1234.9", 0) == 1235);
+    BOOST_REQUIRE(parse_amount("64.25", 5) == 6425000);
+}
+
+BOOST_AUTO_TEST_CASE(format_amount_test)
+{
+    BOOST_REQUIRE(format_amount(123, 0) == "123");
+    BOOST_REQUIRE(format_amount(123, 2) == "1.23");
+    BOOST_REQUIRE(format_amount(123, 4) == "0.0123");
+}
