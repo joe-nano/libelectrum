@@ -75,13 +75,41 @@ BOOST_AUTO_TEST_CASE(stealth)
     BOOST_REQUIRE(payaddr.encoded() == "1Gvq8pSTRocNLDyf858o4PL3yhZm5qQDgB");
 }
 
-BOOST_AUTO_TEST_CASE(stealth_addr_encoding)
+BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_mainnet__round_trip)
 {
-    const std::string addr_str =
+    const std::string encoded =
         "vJmzLu29obZcUGXXgotapfQLUpz7dfnZpbr4xg1R75qctf8xaXAteRdi3ZUk3T2Z"
         "MSad5KyPbve7uyH6eswYAxLHRVSbWgNUeoGuXp";
-    stealth_address addr;
-    addr.set_encoded(addr_str);
-    BOOST_REQUIRE(addr.encoded() == addr_str);
+    stealth_address address;
+    address.set_encoded(encoded);
+    BOOST_REQUIRE(address.encoded() == encoded);
+}
+
+BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_testnet__round_trip)
+{
+    const std::string encoded =
+        "waPXhQwQE9tDugfgLkvpDs3dnkPx1RsfDjFt4zBq7EeWeATRHpyQpYrFZR8T4BQy"
+        "91Vpvshm2TDER8b9ZryuZ8VSzz8ywzNzX8NqF4";
+    stealth_address address;
+    address.set_encoded(encoded);
+    BOOST_REQUIRE(address.encoded() == encoded);
+}
+
+BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_pub_mainnet__round_trip)
+{
+    const std::string encoded =
+        "hfFGUXFPKkQ5M6LC6aEUKMsURdhw93bUdYdacEtBA8XttLv7evZkira2i";
+    stealth_address address;
+    address.set_encoded(encoded);
+    BOOST_REQUIRE(address.encoded() == encoded);
+}
+
+BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_pub_testnet__round_trip)
+{
+    const std::string encoded =
+        "idPayBqZUpZH7Y5GTaoEyGxDsEmU377JUmhtqG8yoHCkfGfhnAHmGUJbL";
+    stealth_address address;
+    address.set_encoded(encoded);
+    BOOST_REQUIRE(address.encoded() == encoded);
 }
 

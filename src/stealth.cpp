@@ -64,6 +64,8 @@ BCW_API stealth_address::stealth_address(const stealth_prefix& prefix,
     // what I wouldn't give for a ternary :).
     if (signatures == 0)
         signatures_ = static_cast<uint8_t>(spend_pubkeys_size);
+    else if (signatures > spend_pubkeys_size)
+        signatures_ = spend_pubkeys_size;
     else
         signatures_ = signatures;
 
@@ -85,6 +87,11 @@ BCW_API std::string stealth_address::encoded() const
 
     // spend_pubkeys must be guarded against a size greater than 255.
     auto number_spend_pubkeys = static_cast<uint8_t>(spend_pubkeys_.size());
+
+    // adjust for key reuse.
+    if (get_reuse_key())
+        --number_spend_pubkeys;
+
     raw_address.push_back(number_spend_pubkeys);
 
     // Serialize the spend keys, excluding any that match the scan key.
