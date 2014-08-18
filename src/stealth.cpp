@@ -19,6 +19,7 @@
 #include <wallet/stealth.hpp>
 
 #include <cstdint>
+#include <boost/dynamic_bitset.hpp>
 #include <bitcoin/bitcoin.hpp>
 
 using namespace bc;
@@ -28,22 +29,60 @@ namespace libwallet {
 constexpr uint8_t options_size = sizeof(uint8_t);
 constexpr uint8_t version_size = sizeof(uint8_t);
 constexpr uint8_t nonce_size = sizeof(uint32_t);
-constexpr uint8_t pubkey_size = 33;
+constexpr uint8_t compressed_pubkey_size = 33;
 constexpr uint8_t number_keys_size = sizeof(uint8_t);
 constexpr uint8_t number_sigs_size = sizeof(uint8_t);
 constexpr uint8_t prefix_length_size = sizeof(uint8_t);
 constexpr uint8_t checksum_size = sizeof(uint32_t);
-
-constexpr uint8_t max_prefix_bits = sizeof(uint32_t) * byte_size;
-constexpr uint8_t max_spend_key_count = sizeof(uint8_t) * byte_size;
+constexpr uint8_t max_spend_key_count = sizeof(uint8_t) * byte_bits;
+constexpr uint8_t max_prefix_bytes = stealth_address::max_prefix_bits / 
+    byte_bits;
 
 // wiki.unsystem.net/index.php/DarkWallet/Stealth#Address_format
 // [version:1=0x2a][options:1][scan_pubkey:33][N:1][spend_pubkey_1:33]..
 // [spend_pubkey_N:33][number_signatures:1][prefix_number_bits:1]
 // [prefix:prefix_number_bits / 8, round up][checksum:4]
 // Estimate assumes N = 0 and prefix_length = 0:
-constexpr size_t min_address_size = version_size + options_size + pubkey_size +
-    number_keys_size + number_sigs_size + prefix_length_size + checksum_size;
+constexpr size_t min_address_size = version_size + options_size +
+    compressed_pubkey_size + number_keys_size + number_sigs_size + 
+    prefix_length_size + checksum_size;
+
+// Document the assumption that the prefix is defined with an 8 bit block size.
+static_assert(stealth_prefix::bits_per_block == byte_bits, 
+    "The declaraction of stealh_prefix must have an 8 bit block size.");
+
+stealth_prefix bytes_to_prefix(const size_t prefix_number_bits,
+    const data_chunk& bytes)
+{
+    stealth_prefix prefix;
+    prefix.init_from_block_range(bytes.begin(), bytes.end());
+    prefix.resize(prefix_number_bits);
+    return prefix;
+}
+
+data_chunk prefix_to_bytes(const stealth_prefix& prefix)
+{
+    const size_t prefix_bytes = prefix.num_blocks();
+    data_chunk bytes(prefix_bytes);
+
+    // The prefix must be guarded against a size greater than 32
+    // so that the bitfield can convert into uint32_t, which also ensures
+    // that number of bits doesn't exceed uint8_t.
+    const auto prefix_bit_field = prefix.to_ulong();
+
+    for (uint8_t index = 0; index < prefix_bytes; ++index)
+    {
+        // 0, 8, 16, 24
+        uint16_t block = index * byte_bits;
+
+        // 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
+        uint32_t mask = 0x000000FF << block;
+        uint32_t value = (prefix_bit_field & mask) >> block;
+        bytes[index] = static_cast<uint8_t>(value);
+    }
+
+    return bytes;
+}
 
 BCW_API stealth_address::stealth_address()
     : valid_(false)
@@ -54,14 +93,26 @@ BCW_API stealth_address::stealth_address(const stealth_prefix& prefix,
     const ec_point& scan_pubkey, const pubkey_list& spend_pubkeys, 
     uint8_t signatures, bool testnet)
 {
-    // spend_pubkeys is guarded against a size greater than 255.
-    // TODO: shouldn't signatures be limited to <= spend_pubkeys_size?
-    const auto spend_pubkeys_size = spend_pubkeys.size();
-    if (spend_pubkeys_size > max_spend_key_count /*|| 
-        signatures <= spend_pubkeys_size*/)
+    // Guard against uncompressed pubkey or junk data.
+    if (scan_pubkey.size() != compressed_pubkey_size)
         return;
 
-    // what I wouldn't give for a ternary :).
+    // Guard against uncompressed pubkey or junk data.
+    for (const auto& spend_pubkey: spend_pubkeys)
+        if (spend_pubkey.size() != compressed_pubkey_size)
+            return;
+
+    // Guard against too many keys.
+    const auto spend_pubkeys_size = spend_pubkeys.size();
+    if (spend_pubkeys_size > max_spend_key_count)
+        return;
+
+    // Guard against prefix too long.
+    auto prefix_number_bits = static_cast<uint8_t>(prefix.size());
+    if (prefix_number_bits > max_prefix_bits)
+        return;
+
+    // Coerce signatures to a valid range.
     if (signatures == 0)
         signatures_ = static_cast<uint8_t>(spend_pubkeys_size);
     else if (signatures > spend_pubkeys_size)
@@ -69,6 +120,7 @@ BCW_API stealth_address::stealth_address(const stealth_prefix& prefix,
     else
         signatures_ = signatures;
 
+    prefix_ = prefix;
     testnet_ = testnet;
     scan_pubkey_ = scan_pubkey;
     spend_pubkeys_ = spend_pubkeys;
@@ -85,10 +137,10 @@ BCW_API std::string stealth_address::encoded() const
     raw_address.push_back(get_options());
     extend_data(raw_address, scan_pubkey_);
 
-    // spend_pubkeys must be guarded against a size greater than 255.
+    // Spend_pubkeys must be guarded against a size greater than 255.
     auto number_spend_pubkeys = static_cast<uint8_t>(spend_pubkeys_.size());
 
-    // adjust for key reuse.
+    // Adjust for key reuse.
     if (get_reuse_key())
         --number_spend_pubkeys;
 
@@ -103,19 +155,18 @@ BCW_API std::string stealth_address::encoded() const
 
     // The prefix must be guarded against a size greater than 32
     // so that the bitfield can convert into uint32_t, which also ensures
-    // that the number of bits doesn't exceed uint8_t.
+    // that number of bits doesn't exceed uint8_t.
     auto prefix_number_bits = static_cast<uint8_t>(prefix_.size());
-    auto prefix_bit_field = static_cast<uint32_t>(prefix_.to_ulong());
 
     // Prefix not yet supported on server!
-    BITCOIN_ASSERT(prefix_number_bits == 0);
-    if (prefix_number_bits != 0)
-        return std::string();
+    //BITCOIN_ASSERT(prefix_number_bits == 0);
+    //if (prefix_number_bits != 0)
+    //    return std::string();
+
+    // Serialize the prefix bytes/blocks.
     raw_address.push_back(prefix_number_bits);
-
-    // Prefix not yet supported on server!
-    // TODO: fix conversion (4 bytes and endianness).
-    //raw_address.push_back(prefix_bit_field);
+    auto raw_prefix = prefix_to_bytes(prefix_);
+    extend_data(raw_address, raw_prefix);
 
     append_checksum(raw_address);
     return encode_base58(raw_address);
@@ -152,7 +203,7 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
 
     // [scan_pubkey:33]
     auto scan_key_begin = iter;
-    iter += pubkey_size;
+    iter += compressed_pubkey_size;
     scan_pubkey_ = ec_point(scan_key_begin, iter);
 
     // [N:1]
@@ -160,7 +211,7 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     ++iter;
 
     // Adjust and retest required size. for pubkey list.
-    required_size += number_spend_pubkeys * pubkey_size;
+    required_size += number_spend_pubkeys * compressed_pubkey_size;
     if (raw_address.size() < required_size)
         return valid_;
 
@@ -172,7 +223,7 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     for (auto key = 0; key < number_spend_pubkeys; ++key)
     {
         auto spend_key_begin = iter;
-        iter += pubkey_size;
+        iter += compressed_pubkey_size;
         spend_pubkeys_.emplace_back(ec_point(spend_key_begin, iter));
     }
 
@@ -184,23 +235,23 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
     auto prefix_number_bits = *iter;
     if (prefix_number_bits > max_prefix_bits)
         return valid_;
-    prefix_.resize(prefix_number_bits);
     ++iter;
 
     // [prefix:prefix_number_bits / 8, round up]
-    auto prefix_bytes = (prefix_number_bits + (byte_size-1)) / byte_size;
-    auto prefix_blocks = prefix_.num_blocks();
-    BITCOIN_ASSERT(prefix_bytes == prefix_blocks);
-
-    // Adjust and retest required size for prefix bytes..
-    required_size += prefix_blocks;
+    // Adjust and retest required size for prefix bytes.
+    auto prefix_bytes = (prefix_number_bits + (byte_bits - 1)) / byte_bits;
+    required_size += prefix_bytes;
     if (raw_address.size() != required_size)
         return valid_;
 
     // Prefix not yet supported on server!
-    BITCOIN_ASSERT(prefix_number_bits == 0);
-    if (prefix_number_bits != 0)
-        return valid_;
+    //BITCOIN_ASSERT(prefix_number_bits == 0);
+    //if (prefix_number_bits != 0)
+    //    return valid_;
+
+    // Deserialize the prefix bytes/blocks.
+    data_chunk raw_prefix(iter, iter + prefix_bytes);
+    prefix_ = bytes_to_prefix(prefix_number_bits, raw_prefix);
 
     valid_ = true;
     return valid_;
@@ -266,7 +317,9 @@ BCW_API bool extract_stealth_info(stealth_info& info,
         output_script.operations().size() > 1)
     {
         const auto& data = output_script.operations()[1].data;
-        auto valid = data.size() == version_size + nonce_size + pubkey_size;
+        auto valid = data.size() == version_size + nonce_size + 
+            compressed_pubkey_size;
+
         if (valid)
         {
             info.bitfield = calculate_stealth_bitfield(data);

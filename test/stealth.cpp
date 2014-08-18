@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <boost/test/unit_test.hpp>
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/wallet.hpp>
@@ -53,14 +56,14 @@ BOOST_AUTO_TEST_CASE(stealth)
     BOOST_REQUIRE(ephem_pubkey.size() == ec_compressed_size);
 
     // Sender
-    ec_point pubkey_1 = libwallet::initiate_stealth(
+    ec_point pubkey_1 = initiate_stealth(
         ephem_privkey, scan_pubkey, spend_pubkey);
     // Receiver
-    ec_point pubkey_2 = libwallet::uncover_stealth(
+    ec_point pubkey_2 = uncover_stealth(
         ephem_pubkey, scan_privkey, spend_pubkey);
     BOOST_REQUIRE(pubkey_1 == pubkey_2);
     // Receiver (secret)
-    ec_secret privkey = libwallet::uncover_stealth_secret(
+    ec_secret privkey = uncover_stealth_secret(
         ephem_pubkey, scan_privkey, spend_privkey);
     BOOST_REQUIRE(secret_to_public_key(privkey) == pubkey_1);
 
@@ -75,7 +78,7 @@ BOOST_AUTO_TEST_CASE(stealth)
     BOOST_REQUIRE(payaddr.encoded() == "1Gvq8pSTRocNLDyf858o4PL3yhZm5qQDgB");
 }
 
-BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_mainnet__round_trip)
+BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_mainnet__round_trips)
 {
     const std::string encoded =
         "vJmzLu29obZcUGXXgotapfQLUpz7dfnZpbr4xg1R75qctf8xaXAteRdi3ZUk3T2Z"
@@ -85,7 +88,7 @@ BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_mainnet__round_trip)
     BOOST_REQUIRE(address.encoded() == encoded);
 }
 
-BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_testnet__round_trip)
+BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_testnet__round_trips)
 {
     const std::string encoded =
         "waPXhQwQE9tDugfgLkvpDs3dnkPx1RsfDjFt4zBq7EeWeATRHpyQpYrFZR8T4BQy"
@@ -95,7 +98,7 @@ BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_testnet__round_trip)
     BOOST_REQUIRE(address.encoded() == encoded);
 }
 
-BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_pub_mainnet__round_trip)
+BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_pub_mainnet__round_trips)
 {
     const std::string encoded =
         "hfFGUXFPKkQ5M6LC6aEUKMsURdhw93bUdYdacEtBA8XttLv7evZkira2i";
@@ -113,3 +116,128 @@ BOOST_AUTO_TEST_CASE(stealth_address__encoding__scan_pub_testnet__round_trip)
     BOOST_REQUIRE(address.encoded() == encoded);
 }
 
+BOOST_AUTO_TEST_CASE(prefix_to_string__32_bits__little_endian)
+{
+    stealth_prefix prefix(32, 0xbaadf00d);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(stream.str(), "10111010101011011111000000001101");
+}
+
+BOOST_AUTO_TEST_CASE(string_to_prefix__32_bits__little_endian)
+{
+    std::stringstream stream;
+    stream << "10111010101011011111000000001101";
+    stealth_prefix prefix(stream.str());
+    BOOST_REQUIRE_EQUAL(prefix.to_ulong(), 0xbaadf00d);
+}
+
+BOOST_AUTO_TEST_CASE(bytes_to_prefix__32_bits__ittle_endian)
+{
+    data_chunk bytes({ 0x0d, 0xf0, 0xad, 0xba });
+    auto prefix = bytes_to_prefix(32, bytes);
+    BOOST_REQUIRE_EQUAL(prefix.to_ulong(), 0xbaadf00d);
+}
+
+BOOST_AUTO_TEST_CASE(prefix_to_bytes__32_bits__little_endian)
+{
+    stealth_prefix prefix(32, 0xbaadf00d);
+    auto bytes = prefix_to_bytes(prefix);
+    BOOST_REQUIRE(bytes == data_chunk({ 0x0d, 0xf0, 0xad, 0xba }));
+}
+
+BOOST_AUTO_TEST_CASE(bytes_to_prefix__zero_bits__round_trips)
+{
+    data_chunk bytes;
+    auto prefix = bytes_to_prefix(0, bytes);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 0);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 0);
+    BOOST_REQUIRE_EQUAL(prefix.to_ulong(), 0x00000000);
+    BOOST_REQUIRE(stream.str().empty());
+}
+
+BOOST_AUTO_TEST_CASE(prefix_to_bytes__zero_bits__round_trips)
+{
+    stealth_prefix prefix(0, 0x00000000);
+    auto bytes = prefix_to_bytes(prefix);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 0);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 0);
+    BOOST_REQUIRE_EQUAL(bytes.size(), 0);
+    BOOST_REQUIRE(stream.str().empty());
+}
+
+BOOST_AUTO_TEST_CASE(bytes_to_prefix__one_bit__round_trips)
+{
+    data_chunk bytes({ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF });
+    auto prefix = bytes_to_prefix(1, bytes);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 1);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 1);
+    BOOST_REQUIRE_EQUAL(prefix.to_ulong(), 0x00000001);
+    BOOST_REQUIRE_EQUAL(stream.str(), "1");
+}
+
+BOOST_AUTO_TEST_CASE(prefix_to_bytes__one_bit__round_trips)
+{
+    stealth_prefix prefix(1, 0xFFFFFFFF);
+    auto bytes = prefix_to_bytes(prefix);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 1);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 1);
+    BOOST_REQUIRE_EQUAL(bytes.size(), 1);
+    BOOST_REQUIRE_EQUAL(stream.str(), "1");
+}
+
+BOOST_AUTO_TEST_CASE(bytes_to_prefix__two_bits_leading_zero__round_trips)
+{
+    data_chunk bytes({ 0x01, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42 });
+    auto prefix = bytes_to_prefix(2, bytes);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 2);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 1);
+    BOOST_REQUIRE_EQUAL(prefix.to_ulong(), 0x00000001);
+    BOOST_REQUIRE_EQUAL(stream.str(), "01");
+}
+
+BOOST_AUTO_TEST_CASE(prefix_to_bytes__two_bits_leading_zero__round_trips)
+{
+    stealth_prefix prefix(2, 0x42424201);
+    auto bytes = prefix_to_bytes(prefix);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 2);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 1);
+    BOOST_REQUIRE_EQUAL(bytes.size(), 1);
+    BOOST_REQUIRE_EQUAL(stream.str(), "01");
+}
+
+BOOST_AUTO_TEST_CASE(bytes_to_prefix__two_bytes_leading_null_byte__round_trips)
+{
+    data_chunk bytes({ 0xFF, 0x00 });
+    auto prefix = bytes_to_prefix(16, bytes);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 16);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 2);
+    BOOST_REQUIRE_EQUAL(prefix.to_ulong(), 0x000000FF);
+    BOOST_REQUIRE_EQUAL(stream.str(), "0000000011111111");
+}
+
+BOOST_AUTO_TEST_CASE(prefix_to_bytes__two_bytes_leading_null_byte__round_trips)
+{
+    stealth_prefix prefix(16, 0x000000FF);
+    auto bytes = prefix_to_bytes(prefix);
+    std::stringstream stream;
+    stream << prefix;
+    BOOST_REQUIRE_EQUAL(prefix.size(), 16);
+    BOOST_REQUIRE_EQUAL(prefix.num_blocks(), 2);
+    BOOST_REQUIRE_EQUAL(bytes.size(), 2);
+    BOOST_REQUIRE_EQUAL(stream.str(), "0000000011111111");
+}

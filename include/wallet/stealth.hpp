@@ -19,6 +19,7 @@
 #ifndef LIBWALLET_STEALTH_HPP
 #define LIBWALLET_STEALTH_HPP
 
+#include <algorithm>
 #include <cstdint>
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/define.hpp>
@@ -37,12 +38,12 @@ BCW_API struct stealth_info
 class stealth_address
 {
 public:
+    static const uint8_t max_prefix_bits = sizeof(uint32_t)* bc::byte_bits;
     enum flags : uint8_t
     {
         none = 0x00,
         reuse_key = 0x01
     };
-
     enum network : uint8_t
     {
         mainnet = 0x2a,
@@ -95,7 +96,10 @@ BCW_API bc::ec_secret uncover_stealth_secret(
     const bc::ec_point& ephem_pubkey, const bc::ec_secret& scan_secret,
     const bc::ec_secret& spend_secret);
 
+BCW_API bc::stealth_prefix bytes_to_prefix(const uint32_t prefix_number_bits,
+    const bc::data_chunk& bytes);
+BCW_API bc::data_chunk prefix_to_bytes(const bc::stealth_prefix& prefix);
+
 } // namespace libwallet
 
 #endif
-
