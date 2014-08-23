@@ -51,7 +51,7 @@ constexpr size_t min_address_size = version_size + options_size +
 static_assert(stealth_prefix::bits_per_block == byte_bits, 
     "The declaraction of stealh_prefix must have an 8 bit block size.");
 
-stealth_prefix bytes_to_prefix(const size_t prefix_number_bits,
+stealth_prefix bytes_to_prefix(const uint8_t prefix_number_bits,
     const data_chunk& bytes)
 {
     stealth_prefix prefix;

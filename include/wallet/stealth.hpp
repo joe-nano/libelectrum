@@ -96,7 +96,7 @@ BCW_API bc::ec_secret uncover_stealth_secret(
     const bc::ec_point& ephem_pubkey, const bc::ec_secret& scan_secret,
     const bc::ec_secret& spend_secret);
 
-BCW_API bc::stealth_prefix bytes_to_prefix(const uint32_t prefix_number_bits,
+BCW_API bc::stealth_prefix bytes_to_prefix(const uint8_t prefix_number_bits,
     const bc::data_chunk& bytes);
 BCW_API bc::data_chunk prefix_to_bytes(const bc::stealth_prefix& prefix);
 
