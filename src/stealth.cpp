@@ -34,9 +34,9 @@ constexpr uint8_t number_keys_size = sizeof(uint8_t);
 constexpr uint8_t number_sigs_size = sizeof(uint8_t);
 constexpr uint8_t prefix_length_size = sizeof(uint8_t);
 constexpr uint8_t checksum_size = sizeof(uint32_t);
-constexpr uint8_t max_spend_key_count = sizeof(uint8_t) * byte_bits;
+constexpr uint8_t max_spend_key_count = sizeof(uint8_t) * /*byte_bits*/ 8;
 constexpr uint8_t max_prefix_bytes = stealth_address::max_prefix_bits / 
-    byte_bits;
+    /*byte_bits*/ 8;
 
 // wiki.unsystem.net/index.php/DarkWallet/Stealth#Address_format
 // [version:1=0x2a][options:1][scan_pubkey:33][N:1][spend_pubkey_1:33]..
@@ -48,7 +48,7 @@ constexpr size_t min_address_size = version_size + options_size +
     prefix_length_size + checksum_size;
 
 // Document the assumption that the prefix is defined with an 8 bit block size.
-static_assert(stealth_prefix::bits_per_block == byte_bits, 
+static_assert(stealth_prefix::bits_per_block == /*byte_bits*/ 8, 
     "The declaraction of stealh_prefix must have an 8 bit block size.");
 
 stealth_prefix bytes_to_prefix(const uint8_t prefix_number_bits,
@@ -73,7 +73,7 @@ data_chunk prefix_to_bytes(const stealth_prefix& prefix)
     for (uint8_t index = 0; index < prefix_bytes; ++index)
     {
         // 0, 8, 16, 24
-        uint16_t block = index * byte_bits;
+        uint16_t block = index * /*byte_bits*/ 8;
 
         // 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
         uint32_t mask = 0x000000FF << block;
@@ -239,7 +239,7 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
 
     // [prefix:prefix_number_bits / 8, round up]
     // Adjust and retest required size for prefix bytes.
-    auto prefix_bytes = (prefix_number_bits + (byte_bits - 1)) / byte_bits;
+    auto prefix_bytes = (prefix_number_bits + (/*byte_bits*/ 8 - 1)) / /*byte_bits*/ 8;
     required_size += prefix_bytes;
     if (raw_address.size() != required_size)
         return valid_;
@@ -287,14 +287,14 @@ BCW_API bool stealth_address::get_testnet() const
     return testnet_;
 }
 
-const bool stealth_address::get_reuse_key() const
+bool stealth_address::get_reuse_key() const
 {
     // If the spend_pubkeys_ contains the scan_pubkey_ then the key is reused.
     return std::find(spend_pubkeys_.begin(), spend_pubkeys_.end(), 
         scan_pubkey_) != spend_pubkeys_.end();
 }
 
-const uint8_t stealth_address::get_options() const
+uint8_t stealth_address::get_options() const
 {
     if (get_reuse_key())
         return flags::reuse_key;
@@ -302,7 +302,7 @@ const uint8_t stealth_address::get_options() const
         return flags::none;
 }
 
-const uint8_t stealth_address::get_version() const
+uint8_t stealth_address::get_version() const
 {
     if (testnet_)
         return network::testnet;
@@ -330,7 +330,7 @@ BCW_API bool extract_stealth_info(stealth_info& info,
     }
 
     return false;
-};
+}
 
 BCW_API ec_point initiate_stealth(
     const ec_secret& ephem_secret, const ec_point& scan_pubkey,
