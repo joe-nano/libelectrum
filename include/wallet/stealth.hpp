@@ -38,7 +38,7 @@ struct stealth_info
 class stealth_address
 {
 public:
-    static const uint8_t max_prefix_bits = sizeof(uint32_t) * /*bc::byte_bits*/ 8;
+    static const uint8_t max_prefix_bits = sizeof(uint32_t) * bc::byte_bits;
     enum flags : uint8_t
     {
         none = 0x00,

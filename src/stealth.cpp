@@ -34,9 +34,9 @@ constexpr uint8_t number_keys_size = sizeof(uint8_t);
 constexpr uint8_t number_sigs_size = sizeof(uint8_t);
 constexpr uint8_t prefix_length_size = sizeof(uint8_t);
 constexpr uint8_t checksum_size = sizeof(uint32_t);
-constexpr uint8_t max_spend_key_count = sizeof(uint8_t) * /*byte_bits*/ 8;
+constexpr uint8_t max_spend_key_count = sizeof(uint8_t) * byte_bits;
 constexpr uint8_t max_prefix_bytes = stealth_address::max_prefix_bits / 
-    /*byte_bits*/ 8;
+    byte_bits;
 
 // wiki.unsystem.net/index.php/DarkWallet/Stealth#Address_format
 // [version:1=0x2a][options:1][scan_pubkey:33][N:1][spend_pubkey_1:33]..
@@ -48,7 +48,7 @@ constexpr size_t min_address_size = version_size + options_size +
     prefix_length_size + checksum_size;
 
 // Document the assumption that the prefix is defined with an 8 bit block size.
-static_assert(stealth_prefix::bits_per_block == /*byte_bits*/ 8, 
+static_assert(stealth_prefix::bits_per_block == byte_bits, 
     "The declaraction of stealh_prefix must have an 8 bit block size.");
 
 stealth_prefix bytes_to_prefix(const uint8_t prefix_number_bits,
@@ -73,7 +73,7 @@ data_chunk prefix_to_bytes(const stealth_prefix& prefix)
     for (uint8_t index = 0; index < prefix_bytes; ++index)
     {
         // 0, 8, 16, 24
-        uint16_t block = index * /*byte_bits*/ 8;
+        uint16_t block = index * byte_bits;
 
         // 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
         uint32_t mask = 0x000000FF << block;
@@ -239,7 +239,7 @@ BCW_API bool stealth_address::set_encoded(const std::string& encoded_address)
 
     // [prefix:prefix_number_bits / 8, round up]
     // Adjust and retest required size for prefix bytes.
-    auto prefix_bytes = (prefix_number_bits + (/*byte_bits*/ 8 - 1)) / /*byte_bits*/ 8;
+    auto prefix_bytes = (prefix_number_bits + (byte_bits - 1)) / byte_bits;
     required_size += prefix_bytes;
     if (raw_address.size() != required_size)
         return valid_;
