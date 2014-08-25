@@ -19,43 +19,87 @@
 #ifndef LIBWALLET_STEALTH_HPP
 #define LIBWALLET_STEALTH_HPP
 
-#include <stdint.h>
+#include <algorithm>
+#include <cstdint>
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/define.hpp>
 
 namespace libwallet {
 
-using namespace libbitcoin;
+typedef std::vector<bc::ec_point> pubkey_list;
 
-struct stealth_address
+struct stealth_info
 {
-    typedef std::vector<ec_point> pubkey_list;
-    enum flags : uint8_t
-    {
-        reuse_key = 0x01
-    };
-
-    BCW_API bool set_encoded(const std::string& encoded_address);
-    BCW_API std::string encoded() const;
-
-    uint8_t options = 0;
-    ec_point scan_pubkey;
-    pubkey_list spend_pubkeys;
-    size_t number_signatures = 0;
-    stealth_prefix prefix;
+    bc::ec_point ephem_pubkey;
+    bc::stealth_bitfield bitfield;
 };
 
-BCW_API ec_point initiate_stealth(
-    const ec_secret& ephem_secret, const ec_point& scan_pubkey,
-    const ec_point& spend_pubkey);
-BCW_API ec_point uncover_stealth(
-    const ec_point& ephem_pubkey, const ec_secret& scan_secret,
-    const ec_point& spend_pubkey);
-BCW_API ec_secret uncover_stealth_secret(
-    const ec_point& ephem_pubkey, const ec_secret& scan_secret,
-    const ec_secret& spend_secret);
+// Supports testnet and mainnet addresses but not prefix > 0
+class stealth_address
+{
+public:
+    static const uint8_t max_prefix_bits = sizeof(uint32_t) * bc::byte_bits;
+    enum flags : uint8_t
+    {
+        none = 0x00,
+        reuse_key = 0x01
+    };
+    enum network : uint8_t
+    {
+        mainnet = 0x2a,
+        testnet = 0x2b
+    };
+
+    // Construction
+    BCW_API stealth_address();
+    BCW_API stealth_address(const bc::stealth_prefix& prefix,
+        const bc::ec_point& scan_pubkey, const pubkey_list& spend_pubkeys,
+        uint8_t signatures, bool testnet);
+
+    // Serialization
+    BCW_API std::string encoded() const;
+    BCW_API bool set_encoded(const std::string& encoded_address);
+    BCW_API bool valid() const;
+
+    // Properties
+    BCW_API const bc::stealth_prefix& get_prefix() const;
+    BCW_API const bc::ec_point& get_scan_pubkey() const;
+    BCW_API uint8_t get_signatures() const;
+    BCW_API const pubkey_list& get_spend_pubkeys() const;
+    BCW_API bool get_testnet() const;
+
+protected:
+    bool get_reuse_key() const;
+    uint8_t get_options() const;
+    uint8_t get_version() const;
+
+    bool valid_ = false;
+    bool testnet_ = false;
+    uint8_t signatures_ = 0;
+    bc::ec_point scan_pubkey_;
+    pubkey_list spend_pubkeys_;
+    bc::stealth_prefix prefix_;
+};
+
+// See libbitcoin::extract()
+BCW_API bool extract_stealth_info(stealth_info& info,
+    const bc::script_type& output_script);
+BCW_API bc::ec_point initiate_stealth(
+    const bc::ec_secret& ephem_secret, const bc::ec_point& scan_pubkey,
+    const bc::ec_point& spend_pubkey);
+BCW_API bc::ec_secret shared_secret(const bc::ec_secret& secret,
+    const bc::ec_point& point);
+BCW_API bc::ec_point uncover_stealth(
+    const bc::ec_point& ephem_pubkey, const bc::ec_secret& scan_secret,
+    const bc::ec_point& spend_pubkey);
+BCW_API bc::ec_secret uncover_stealth_secret(
+    const bc::ec_point& ephem_pubkey, const bc::ec_secret& scan_secret,
+    const bc::ec_secret& spend_secret);
+
+BCW_API bc::stealth_prefix bytes_to_prefix(uint8_t prefix_number_bits,
+    const bc::data_chunk& bytes);
+BCW_API bc::data_chunk prefix_to_bytes(const bc::stealth_prefix& prefix);
 
 } // namespace libwallet
 
 #endif
-

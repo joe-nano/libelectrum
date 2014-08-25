@@ -2,31 +2,36 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <_PropertySheetDisplayName>Libwallet Library Common Settings</_PropertySheetDisplayName>
+    <_PropertySheetDisplayName>Libwallet Test Common Settings</_PropertySheetDisplayName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   
   <!-- Configuration -->
-  
+
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(RepoRoot)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)include\;$(RepoRoot)libbitcoin\include\;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4290;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <EnablePREfast>false</EnablePREfast>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(ConfigurationType)' == 'DynamicLibrary'">BCW_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(ConfigurationType)' == 'StaticLibrary'">BCW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(DebugOrRelease)' == 'Release'">BITCOIN_DISABLE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link Condition="$(Configuration.IndexOf('Debug')) != -1">
+      <AdditionalOptions>/OPT:NOLBR /IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(TargetPath)" --run_test=* --random=1 --show_progress=yes --result_code=no --detect_memory_leak=0 --report_level=no --build_info=yes</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   
   <!-- Dependencies -->
   
   <ImportGroup Label="PropertySheets">
     <Import Project="$(SolutionDir)libbitcoin.import.props" />
+    <Import Project="$(SolutionDir)libwallet.import.props" />
   </ImportGroup>
-  
+
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'dynamic'">
     <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
@@ -34,15 +39,17 @@
     <Linkage-czmq>dynamic</Linkage-czmq>
     <Linkage-libzmq>dynamic</Linkage-libzmq>
     <Linkage-libsodium>dynamic</Linkage-libsodium>
+    <Linkage-libwallet>dynamic</Linkage-libwallet>
     <Linkage-libbitcoin>dynamic</Linkage-libbitcoin>
   </PropertyGroup>
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'ltcg'">
     <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
-    <Linkage-czmqpp>ltcg</Linkage-czmqpp>
+    <Linkage-czmqpp>static</Linkage-czmqpp>
     <Linkage-czmq>ltcg</Linkage-czmq>
-    <Linkage-libzmq>ltcg</Linkage-libzmq>
+    <Linkage-libzmq>static</Linkage-libzmq>
     <Linkage-libsodium>ltcg</Linkage-libsodium>
+    <Linkage-libwallet>ltcg</Linkage-libwallet>
     <Linkage-libbitcoin>ltcg</Linkage-libbitcoin>
   </PropertyGroup>
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'static'">
@@ -52,6 +59,7 @@
     <Linkage-czmq>static</Linkage-czmq>
     <Linkage-libzmq>static</Linkage-libzmq>
     <Linkage-libsodium>static</Linkage-libsodium>
+    <Linkage-libwallet>static</Linkage-libwallet>
     <Linkage-libbitcoin>static</Linkage-libbitcoin>
   </PropertyGroup>
 
@@ -64,7 +72,9 @@
     <Message Text="Linkage-czmq      : $(Linkage-czmq)" Importance="high"/>
     <Message Text="Linkage-libzmq    : $(Linkage-libzmq)" Importance="high"/>
     <Message Text="Linkage-libsodium : $(Linkage-libsodium)" Importance="high"/>
+    <Message Text="Linkage-libwallet : $(Linkage-libwallet)" Importance="high"/>
     <Message Text="Linkage-libbitcoin: $(Linkage-libbitcoin)" Importance="high"/>
   </Target>
 
 </Project>
+

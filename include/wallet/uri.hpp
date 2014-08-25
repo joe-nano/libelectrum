@@ -20,6 +20,8 @@
 #ifndef LIBWALLET_URI_HPP
 #define LIBWALLET_URI_HPP
 
+#include <cstdint>
+#include <string>
 #include <sstream>
 #include <boost/optional.hpp>
 #include <bitcoin/bitcoin.hpp>
@@ -46,7 +48,7 @@ class BCW_API uri_parse_result
   : public uri_visitor
 {
 public:
-    typedef boost::optional<libbitcoin::payment_address> optional_address;
+    typedef boost::optional<bc::payment_address> optional_address;
     typedef boost::optional<uint64_t> optional_amount;
     typedef boost::optional<std::string> optional_string;
 
@@ -79,7 +81,7 @@ public:
     BCW_API uri_writer();
 
     // Formatted:
-    BCW_API void write_address(const libbitcoin::payment_address& address);
+    BCW_API void write_address(const bc::payment_address& address);
     BCW_API void write_amount(uint64_t satoshis);
     BCW_API void write_label(const std::string& label);
     BCW_API void write_message(const std::string& message);

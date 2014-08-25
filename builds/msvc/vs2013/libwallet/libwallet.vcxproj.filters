@@ -22,9 +22,6 @@
     <ClCompile Include="..\..\..\..\src\amount.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\electrum_keys.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\include\wallet\key_formats.hpp">
@@ -46,9 +43,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\wallet\define.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\include\wallet\electrum_keys.hpp">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\wallet\stealth.hpp">

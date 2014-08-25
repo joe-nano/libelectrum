@@ -17,10 +17,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <wallet/uri.hpp>
+
+#include <cstdint>
+#include <boost/algorithm/string.hpp>
 #include <bitcoin/bitcoin.hpp>
+#include <wallet/amount.hpp>
 #include <wallet/define.hpp>
 #include <wallet/uri.hpp>
-#include <wallet/amount.hpp>
+
+using namespace bc;
 
 namespace libwallet {
 
@@ -105,7 +111,7 @@ BCW_API bool uri_parse(const std::string& uri, uri_visitor& result,
     }
 
     // Payment address:
-    std::string address = unescape(i, uri.end(), libbitcoin::is_base58);
+    std::string address = unescape(i, uri.end(), is_base58);
     if (uri.end() != i && '?' != *i)
         return false;
     if (!address.empty() && !result.got_address(address))
@@ -137,7 +143,7 @@ BCW_API bool uri_parse(const std::string& uri, uri_visitor& result,
 
 BCW_API bool uri_parse_result::got_address(std::string& address)
 {
-    libbitcoin::payment_address payaddr;
+    payment_address payaddr;
     if (!payaddr.set_encoded(address))
         return false;
     this->address.reset(payaddr);
@@ -188,8 +194,7 @@ BCW_API uri_writer::uri_writer()
     stream_ << "bitcoin:";
 }
 
-BCW_API void uri_writer::write_address(
-    const libbitcoin::payment_address& address)
+BCW_API void uri_writer::write_address(const payment_address& address)
 {
     write_address(address.encoded());
 }

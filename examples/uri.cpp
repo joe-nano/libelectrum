@@ -21,13 +21,17 @@
   Demonstration of URI utilities.
 */
 #include <iostream>
+#include <string>
 #include <bitcoin/bitcoin.hpp>
 #include <wallet/wallet.hpp>
+
+using namespace libwallet;
 
 /**
  * Example class to demonstrate handling custom URI parameters.
  */
-struct custom_result: public libwallet::uri_parse_result
+struct custom_result
+    : public uri_parse_result
 {
     optional_string myparam;
 
@@ -43,7 +47,7 @@ protected:
 int main()
 {
     // Write a URI:
-    libwallet::uri_writer writer;
+    uri_writer writer;
     writer.write_address(std::string("113Pfw4sFqN1T5kXUnKbqZHMJHN9oyjtgD"));
     writer.write_amount(120000);
     writer.write_amount(10000000000);

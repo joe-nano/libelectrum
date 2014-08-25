@@ -17,16 +17,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include <wallet/define.hpp>
 #include <wallet/mnemonic.hpp>
 
-#ifdef _WIN32
-#include <stdint.h>
-#include <iostream>
-#endif
 #include <algorithm>
+#include <cstdint>
+#include <iostream>
 #include <sstream>
 #include <bitcoin/bitcoin.hpp>
+#include <wallet/define.hpp>
+
+using namespace bc;
 
 namespace libwallet {
 
@@ -1662,12 +1662,13 @@ string_list common_words{
 "weary"
 };
 
-BCW_API string_list encode_mnemonic(const std::string& seed)
+BCW_API string_list encode_mnemonic(const data_chunk& seed)
 {
     BITCOIN_ASSERT(common_words.size() == 1626);
     string_list result;
-    auto seed_end = seed.end() - seed.size() % 8;
-    for (auto it = seed.begin(); it != seed_end; it += 8)
+    std::string string_seed(encode_hex(seed));
+    const auto seed_end = string_seed.end() - string_seed.size() % 8;
+    for (auto it = string_seed.begin(); it != seed_end; it += 8)
     {
         const std::string hex_int(it, it + 8);
         BITCOIN_ASSERT(hex_int.size() == 8);
