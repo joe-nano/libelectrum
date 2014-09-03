@@ -7,7 +7,13 @@ Name: libwallet
 Description:  Hierarchical deterministic Bitcoin keys and other wallet utilities.
 URL: https://github.com/libbitcoin/libwallet
 Version: @PACKAGE_VERSION@
-Cflags: -I${includedir} -std=c++11
+
+# Our dependencies that publish package configuration.
 Requires: libbitcoin >= 2.0.1
+
+# Our own include directory and any other compiler flags we require.
+Cflags: -I${includedir} -std=c++11
+
+# Our own lib and any we require that do not publish package configuration.
 Libs: -L${libdir} -lwallet
 
