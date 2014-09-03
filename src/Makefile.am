@@ -1,7 +1,11 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
 lib_LTLIBRARIES = libwallet.la
-AM_CPPFLAGS = -I$(srcdir)/../include $(libbitcoin_CFLAGS)
+
+AM_CPPFLAGS = \
+    -I$(srcdir)/../include \
+    ${bitcoin_CFLAGS}
+
 libwallet_la_SOURCES = \
     amount.cpp \
     mnemonic.cpp \
@@ -11,5 +15,6 @@ libwallet_la_SOURCES = \
     stealth.cpp \
     uri.cpp
 
-libwallet_la_LIBADD = $(libbitcoin_LIBS)
+libwallet_la_LIBADD = \
+    ${bitcoin_LIBS}
 
