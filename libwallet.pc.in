@@ -4,10 +4,16 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libwallet
-Description:  Rewrite bitcoin, make it super-pluggable, very easy to do and hack everything at every level, and very configurable.
-URL: http://libbitcoin.dyne.org/libwallet/
+Description:  Hierarchical deterministic Bitcoin keys and other wallet utilities.
+URL: https://github.com/libbitcoin/libwallet
 Version: @PACKAGE_VERSION@
-Requires: libcurl libbitcoin
-Cflags: -I${includedir}
+
+# Our dependencies that publish package configuration.
+Requires: libbitcoin >= 2.0.1
+
+# Our own include directory and any other compiler flags we require.
+Cflags: -I${includedir} -std=c++11
+
+# Our own lib and any we require that do not publish package configuration.
 Libs: -L${libdir} -lwallet
 
