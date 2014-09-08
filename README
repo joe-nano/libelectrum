@@ -1,3 +1,4 @@
 libwallet functionality has been merged into the libbitcoin 
 develop branch, in the libbitcoin namespace. If you are working
-in this branch you should not build libwallet.
+in this branch you should not build libwallet. If you do need to
+use libwallet you must build against 2.0.1 of libbitcoin/develop. 
