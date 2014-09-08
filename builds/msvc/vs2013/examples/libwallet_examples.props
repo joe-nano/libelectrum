@@ -32,9 +32,6 @@
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'dynamic'">
     <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
-    <Linkage-czmqpp>dynamic</Linkage-czmqpp>
-    <Linkage-czmq>dynamic</Linkage-czmq>
-    <Linkage-libzmq>dynamic</Linkage-libzmq>
     <Linkage-libsodium>dynamic</Linkage-libsodium>
     <Linkage-libwallet>dynamic</Linkage-libwallet>
     <Linkage-libbitcoin>dynamic</Linkage-libbitcoin>
@@ -42,9 +39,6 @@
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'ltcg'">
     <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
-    <Linkage-czmqpp>static</Linkage-czmqpp>
-    <Linkage-czmq>ltcg</Linkage-czmq>
-    <Linkage-libzmq>static</Linkage-libzmq>
     <Linkage-libsodium>ltcg</Linkage-libsodium>
     <Linkage-libwallet>ltcg</Linkage-libwallet>
     <Linkage-libbitcoin>ltcg</Linkage-libbitcoin>
@@ -52,9 +46,6 @@
   <PropertyGroup Condition="'$(DefaultLinkage)' == 'static'">
     <Linkage-secp256k1>static</Linkage-secp256k1>
     <Linkage-mpir>static</Linkage-mpir>
-    <Linkage-czmqpp>static</Linkage-czmqpp>
-    <Linkage-czmq>static</Linkage-czmq>
-    <Linkage-libzmq>static</Linkage-libzmq>
     <Linkage-libsodium>static</Linkage-libsodium>
     <Linkage-libwallet>static</Linkage-libwallet>
     <Linkage-libbitcoin>static</Linkage-libbitcoin>
@@ -65,9 +56,6 @@
   <Target Name="LinkageInfo" BeforeTargets="PrepareForBuild">
     <Message Text="Linkage-secp256k1 : $(Linkage-secp256k1)" Importance="high"/>
     <Message Text="Linkage-mpir      : $(Linkage-mpir)" Importance="high"/>
-    <Message Text="Linkage-czmqpp    : $(Linkage-czmqpp)" Importance="high"/>
-    <Message Text="Linkage-czmq      : $(Linkage-czmq)" Importance="high"/>
-    <Message Text="Linkage-libzmq    : $(Linkage-libzmq)" Importance="high"/>
     <Message Text="Linkage-libsodium : $(Linkage-libsodium)" Importance="high"/>
     <Message Text="Linkage-libwallet : $(Linkage-libwallet)" Importance="high"/>
     <Message Text="Linkage-libbitcoin: $(Linkage-libbitcoin)" Importance="high"/>
